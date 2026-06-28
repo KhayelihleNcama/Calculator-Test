@@ -1,0 +1,9 @@
+#weather{
+    box-shadow: 1px;
+    padding: 2px;
+    backdrop-filter: blur(1px);
+    background-color: blue;
+}
+option{
+    color: red;
+}

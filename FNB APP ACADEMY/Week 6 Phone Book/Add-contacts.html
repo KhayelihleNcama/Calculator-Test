@@ -1,0 +1,68 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="style.css">
+        <title></title>
+    </head>
+    <body>
+        <br />
+        
+        <form id="editForm">
+        
+            <label for="firstname">First name:</label>
+            <input type="text" name="firstname" id="firstname" placeholder="Enter name"><br />
+            <label for="lastname">Last name:</label>
+            <input type="text" name="lastname" id="lastname" placeholder="Enter surname"><br />
+            <label for="mobile">Mobile No.</label>
+            <input type="text" name="mobile" id="mobile" placeholder="+27"><br />
+            <label for="email" class="mail">E-mail:</label>
+            <input type="text" name="email" id="email" placeholder="Enter E-mail"><br />
+            <label for="avatar">Select a file</label>
+            <input type="file" name="avatar" id="firstname" placeholder="avatar"><br />
+            <button type="submit" id="submitForm">Submit</button>
+            
+        </form>
+  
+        <br />
+        <button id="homeLink" type="button">Home</button>
+        <script src="config.js"></script>
+        <script>
+
+            document.getElementById("submitForm").addEventListener ('click',submitForm);
+            document.getElementById("homeLink").addEventListener ('click',HP);
+
+            function submitForm(e){
+                e.preventDefault();
+                const form = new FormData(document.querySelector('#editForm'));
+                form.append('apiKey',apiKey);
+                fetch(rootPath + 'controller/insert-contact/',{
+                    method: 'POST',
+                    headers:{'Accept':'application/json *.*'},
+                    body: form
+                })
+                .then(function(response){
+                
+                    return response.text();
+                })
+                .then(function(data){
+                    if (data == "1"){
+                        alert("Contact Added.");
+                        //link to user contacts to HP//
+                        HP();
+
+                    }else{
+                        alert(data);
+                        //link to HP//
+                        HP();
+                    }
+                
+                })
+            }
+                function HP(){
+                    window.open("index.html", "_self");
+
+                }
+            
+        </script>
+    </body>
+</html>

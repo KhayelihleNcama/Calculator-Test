@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+    <title>
+        Login
+    </title>
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+   <video autoplay muted loop id="background-video">
+        <source src="videos/narutos-restful-thoughts.3840x2160.mp4" type="video/mp4">
+   </video>
+    
+    <div class="glass-container">
+        <h2>Login</h2>
+        <form onsubmit="return verifyUser(event)">
+            <div class ="input-group">
+                <input type="text" id="UsernameInput" required >
+                <label>Username</label>
+            </div>
+            <div class="input-group">
+                <input type="password" id="PasswordInput" required>
+                <label>Password</label>
+                <button type="button" class="toggle-password" onclick="togglePassword()" aria-label="Show password">👁</button>
+            </div>
+            <div class="remember-forgot">
+                <label><input type="checkbox">Remember me</label>
+                <a href="Forgote passwprd.html"> Forgote Password</a>
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+
+            <div class="register-link">
+                <p>Don't have an account? <a href="register.html">Create account</a></p>
+            </div>
+            <p id="paragraph"></p>
+            <h5 id="heading"></h5>
+            <script>
+            function verifyUser(event) {
+                event.preventDefault();
+
+                var username = document.getElementById('UsernameInput').value.trim();
+                var password = document.getElementById('PasswordInput').value.trim();
+                var systemUsername = "25007973@Dut4life.ac.za";
+                var systemPassword = "$$Dut4life";
+
+                if (username === systemUsername && password === systemPassword) {
+                    document.getElementById('paragraph').innerHTML = 'Logging in...';
+                    document.getElementById('heading').innerHTML = '';
+                } else {
+                    document.getElementById('heading').innerHTML = 'Invalid Credentials! Please try again.';
+                    document.getElementById('paragraph').innerHTML = '';
+                }
+
+                return false;
+            }
+
+            function togglePassword() {
+                var passwordInput = document.getElementById('PasswordInput');
+                var button = document.querySelector('.toggle-password');
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    button.textContent = '🙈';
+                    button.setAttribute('aria-label', 'Hide password');
+                } else {
+                    passwordInput.type = 'password';
+                    button.textContent = '👁';
+                    button.setAttribute('aria-label', 'Show password');
+                }
+            }
+            </script>
+    </form>
+    </div>
+    
+
+    
+</body>
+</html>
+
+</body>
+</html>

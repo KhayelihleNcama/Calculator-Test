@@ -1,0 +1,27 @@
+
+button{
+    background-color: rgb(255, 255, 255);
+    border-radius: 0.1cm;
+    color: rgb(0, 0, 0);
+    font-style: normal;
+    font-family:Arial, Helvetica, sans-serif;
+    }
+    h1{
+    color: rgb(255, 255, 255);
+    font-style:normal;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    }
+    #Menu-Bar a{
+        color: aqua;
+    }      
+button:hover{
+    transform: scale(1.1);
+    background-color: aquamarine;
+    }
+button :active{
+    background-color: rgb(0, 255, 255);
+    }
+body{
+    background-color: rgb(88, 88, 255);
+    background:linear-gradient(To right,rgb(100, 100, 255),rgb(242, 81, 242));
+}

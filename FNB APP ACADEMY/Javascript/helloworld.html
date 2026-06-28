@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+    <body>
+        <p id="paragraph"></p>
+        <p id="paragraph1"></p>
+        <h3>Login Form</h3>
+        <label for="username">username:</label><input type="text" id="username"><br />
+        <label for="username">password:</label><input type="password" id="password"><br />
+        <a href="#" onclick="veriftyUser()">Login</a>
+        <script>
+            function veriftyUser(){
+                var usernameInput = document.getElementById("username").value;
+                var passwordInput = document.getElementById("password").value;
+                checkUser(usernameInput,passwordInput)
+            }
+            function checkUser(usernameInput,passwordInput){
+                var sytemeUsername = "p";
+                var sytemePassword = "p";
+                if (usernameInput == sytemeUsername && passwordInput == sytemePassword)
+                {
+                    document.getElementById("paragraph").innerHTML = "Logging in, please wait...";
+
+                }else{
+                    document.getElementById("paragraph1").innerHTML = "Invalid details, please try Again";
+                }
+            }
+
+        </script>
+    </body>
+</html>

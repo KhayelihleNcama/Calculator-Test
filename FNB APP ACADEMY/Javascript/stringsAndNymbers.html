@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+    <body>
+        <p id="paragraph"></p>
+        <script>
+            var text1 = "ten";
+            var text2 = "2";
+
+            var num1  = stringToNumber(text1);
+            var num2  = stringToNumber(text2);
+            
+            if (isNaN(num1) || isNaN(num2))
+            {
+                document.getElementById("paragraph").innerHTML = "invalid, Please use a number";
+            }else{
+                document.getElementById("paragraph").innerHTML = num1 + num2;
+            }
+                
+            function stringToNumber(text)
+            {
+                return parseInt(text);
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,28 @@
+
+h1{
+    color: aliceblue;
+}
+p{
+    color: aliceblue;
+}
+button{
+    background-color: rgb(255, 255, 255);
+    border-radius: 0.1cm;
+    padding-left: 5px;
+    
+}
+button:hover{
+   transform: scale(1.1);
+   background-color: rgb(126, 173, 181)
+}
+button:active{
+    transform: scale(0.95);
+    
+}
+ul{
+    list-style-type: square;
+}
+
+ol{
+list-style-type: upper-roman;
+}
