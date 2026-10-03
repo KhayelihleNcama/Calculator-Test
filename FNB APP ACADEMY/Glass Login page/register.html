@@ -1,15 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
-    <title>
-        Register new Account
-    </title>
-    <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#241b3b">
+    <title>Create Account</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <video src="videos/narutos-restful-thoughts.3840x2160.mp4" autoplay loop muted></video>
-    <div class="container">
-        
- </html>
+    <video src="videos/narutos-restful-thoughts.3840x2160.mp4" autoplay loop muted playsinline aria-hidden="true"></video>
+
+    <main class="glass-container registration-container">
+        <h2>Create Account</h2>
+        <p class="registration-intro">Enter your details to get started.</p>
+
+        <form id="registrationForm">
+            <div class="input-group">
+                <input type="text" id="firstName" name="firstName" autocomplete="given-name" required>
+                <label for="firstName">First name</label>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="lastName" name="lastName" autocomplete="family-name" required>
+                <label for="lastName">Last name</label>
+            </div>
+
+            <div class="input-group">
+                <input type="email" id="email" name="email" autocomplete="email" required>
+                <label for="email">Email address</label>
+            </div>
+
+            <div class="phone-fields">
+                <div class="country-code-field">
+                    <label for="countryCode">Country code</label>
+                    <select id="countryCode" name="countryCode" autocomplete="tel-country-code" required>
+                        <option value="+27" selected>South Africa (+27)</option>
+                        <option value="+1">United States / Canada (+1)</option>
+                        <option value="+44">United Kingdom (+44)</option>
+                        <option value="+61">Australia (+61)</option>
+                        <option value="+64">New Zealand (+64)</option>
+                        <option value="+91">India (+91)</option>
+                        <option value="+234">Nigeria (+234)</option>
+                        <option value="+254">Kenya (+254)</option>
+                        <option value="+255">Tanzania (+255)</option>
+                        <option value="+256">Uganda (+256)</option>
+                        <option value="+263">Zimbabwe (+263)</option>
+                        <option value="+264">Namibia (+264)</option>
+                        <option value="+267">Botswana (+267)</option>
+                        <option value="+260">Zambia (+260)</option>
+                        <option value="+265">Malawi (+265)</option>
+                        <option value="+258">Mozambique (+258)</option>
+                        <option value="+33">France (+33)</option>
+                        <option value="+49">Germany (+49)</option>
+                        <option value="+81">Japan (+81)</option>
+                        <option value="+86">China (+86)</option>
+                        <option value="+971">United Arab Emirates (+971)</option>
+                        <option value="+966">Saudi Arabia (+966)</option>
+                        <option value="+55">Brazil (+55)</option>
+                        <option value="+52">Mexico (+52)</option>
+                    </select>
+                </div>
+
+                <div class="input-group phone-number-field">
+                    <input type="tel" id="phoneNumber" name="phoneNumber" autocomplete="tel-national" inputmode="numeric" minlength="7" maxlength="15" pattern="[0-9]{7,15}" required>
+                    <label for="phoneNumber">Cellphone number</label>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="password" name="password" autocomplete="new-password" minlength="8" required>
+                <label for="password">Password (at least 8 characters)</label>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" required>
+                <label for="confirmPassword">Confirm password</label>
+            </div>
+
+            <label class="terms-row">
+                <input type="checkbox" id="agreeToTerms" required>
+                <span>I agree to the terms and conditions.</span>
+            </label>
+
+            <button type="submit" class="login-btn">Create Account</button>
+            <p id="registrationMessage" class="registration-message" aria-live="polite"></p>
+        </form>
+
+        <div class="register-link">
+            <p>Already have an account? <a href="login.html">Log in</a></p>
+        </div>
+    </main>
+
+    <script>
+        const registrationForm = document.getElementById('registrationForm');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const registrationMessage = document.getElementById('registrationMessage');
+
+        registrationForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            registrationMessage.textContent = '';
+            registrationMessage.classList.remove('is-error');
+
+            if (passwordInput.value !== confirmPasswordInput.value) {
+                registrationMessage.textContent = 'Your passwords do not match.';
+                registrationMessage.classList.add('is-error');
+                confirmPasswordInput.focus();
+                return;
+            }
+
+            if (!registrationForm.checkValidity()) {
+                registrationMessage.textContent = 'Please complete all fields with valid information.';
+                registrationMessage.classList.add('is-error');
+                registrationForm.reportValidity();
+                return;
+            }
+
+            const submitButton = registrationForm.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        firstName: registrationForm.elements.firstName.value,
+                        lastName: registrationForm.elements.lastName.value,
+                        email: registrationForm.elements.email.value,
+                        countryCode: registrationForm.elements.countryCode.value,
+                        phoneNumber: registrationForm.elements.phoneNumber.value,
+                        password: passwordInput.value,
+                        termsAccepted: document.getElementById('agreeToTerms').checked,
+                    }),
+                });
+                const result = await response.json();
+
+                if (!response.ok) {
+                    registrationMessage.textContent = result.message || 'Could not create your account.';
+                    registrationMessage.classList.add('is-error');
+                    return;
+                }
+
+                registrationMessage.textContent = result.message;
+                registrationForm.reset();
+            } catch (error) {
+                registrationMessage.textContent = 'Could not reach the server. Start the app server and try again.';
+                registrationMessage.classList.add('is-error');
+            } finally {
+                submitButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

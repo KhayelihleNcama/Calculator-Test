@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Todo List</title>
         <link rel="stylesheet" href="style.css">
-            <lang="en">
-                <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Todo List</title>
     </head>
     <body>
         <div class="container">
@@ -13,14 +12,93 @@
                 <h2>Todo List</h2>
                 <div class="row">
                     <input type="text" id="input-box" placeholder="Add a new task">
-                    <button id="add-btn">Add</button>
+                    <button id="add-btn" type="button">Add</button>
                 </div>
                 <ul id="todo-list">
-                    <li class="checked">Task 1</li>
-                    <li>Task 2</li>
-                    <li>Task 3</li>
+                    
+                   
                 </ul>
             </div>
         </div>
+
+        <script>
+            const inputBox = document.getElementById('input-box');
+            const addBtn = document.getElementById('add-btn');
+            const todoList = document.getElementById('todo-list');
+            const STORAGE_KEY = 'todo-list-items';
+
+            function loadTasks() {
+                const tasks = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                tasks.forEach((task) => {
+                    addTaskItem(task.text, task.checked);
+                });
+            }
+
+            function saveTasks() {
+                const tasks = [];
+                document.querySelectorAll('#todo-list li').forEach((taskItem) => {
+                    tasks.push({
+                        text: taskItem.dataset.text,
+                        checked: taskItem.classList.contains('checked')
+                    });
+                });
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+            }
+
+            function toggleTask(taskItem) {
+                taskItem.classList.toggle('checked');
+                saveTasks();
+            }
+
+            function deleteTask(taskItem) {
+                taskItem.remove();
+                saveTasks();
+            }
+
+            function addTaskItem(text, checked = false) {
+                const li = document.createElement('li');
+                li.dataset.text = text;
+                li.textContent = text;
+
+                if (checked) {
+                    li.classList.add('checked');
+                }
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.type = 'button';
+                deleteBtn.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    deleteTask(li);
+                });
+
+                li.appendChild(deleteBtn);
+                li.addEventListener('click', () => toggleTask(li));
+                todoList.appendChild(li);
+            }
+
+            function addTask() {
+                const taskText = inputBox.value.trim();
+                if (!taskText) {
+                    inputBox.focus();
+                    return;
+                }
+
+                addTaskItem(taskText, false);
+                saveTasks();
+                inputBox.value = '';
+                inputBox.focus();
+            }
+
+            addBtn.addEventListener('click', addTask);
+            inputBox.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    addTask();
+                }
+            });
+
+            loadTasks();
+        </script>
     </body>
 </html>

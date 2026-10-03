@@ -1,0 +1,15 @@
+{
+    "livePreview.defaultPreviewPath": "/Weather-App/index.html",
+    "python-envs.pythonProjects": [
+        {
+            "path": "pract.py",
+            "envManager": "ms-python.python:venv",
+            "packageManager": "ms-python.python:pip"
+        },
+        {
+            "path": "FindMax.py",
+            "envManager": "ms-python.python:venv",
+            "packageManager": "ms-python.python:pip"
+        }
+    ]
+}

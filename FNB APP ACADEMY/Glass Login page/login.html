@@ -9,70 +9,83 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-   <video autoplay muted loop id="background-video">
-        <source src="videos/narutos-restful-thoughts.3840x2160.mp4" type="video/mp4">
-   </video>
-    
+    <video src="videos/narutos-restful-thoughts.3840x2160.mp4" autoplay loop muted></video>
     <div class="glass-container">
         <h2>Login</h2>
-        <form onsubmit="return verifyUser(event)">
-            <div class ="input-group">
-                <input type="text" id="UsernameInput" required >
-                <label>Username</label>
+        <form id="loginForm" novalidate>
+            <div class="input-group">
+                <input type="email" id="UsernameInput" name="email" autocomplete="username" required>
+                <label for="UsernameInput">Email address</label>
             </div>
             <div class="input-group">
-                <input type="password" id="PasswordInput" required>
-                <label>Password</label>
-                <button type="button" class="toggle-password" onclick="togglePassword()" aria-label="Show password">👁</button>
+                <input type="password" id="PasswordInput" name="password" autocomplete="current-password" required>
+                <label for="PasswordInput">Password</label>
             </div>
             <div class="remember-forgot">
-                <label><input type="checkbox">Remember me</label>
-                <a href="Forgote passwprd.html"> Forgote Password</a>
+                <label><input type="checkbox" id="rememberMe" name="rememberMe">Remember me</label>
+                <a href="Forgote passwprd.html">Forgot Password</a>
             </div>
             <button type="submit" class="login-btn">Login</button>
 
             <div class="register-link">
-                <p>Don't have an account? <a href="register.html">Create account</a></p>
+                <p>Don't have an account? <a href="register.html">Register</a></p>
             </div>
-            <p id="paragraph"></p>
-            <h5 id="heading"></h5>
-            <script>
-            function verifyUser(event) {
-                event.preventDefault();
-
-                var username = document.getElementById('UsernameInput').value.trim();
-                var password = document.getElementById('PasswordInput').value.trim();
-                var systemUsername = "25007973@Dut4life.ac.za";
-                var systemPassword = "$$Dut4life";
-
-                if (username === systemUsername && password === systemPassword) {
-                    document.getElementById('paragraph').innerHTML = 'Logging in...';
-                    document.getElementById('heading').innerHTML = '';
-                } else {
-                    document.getElementById('heading').innerHTML = 'Invalid Credentials! Please try again.';
-                    document.getElementById('paragraph').innerHTML = '';
-                }
-
-                return false;
-            }
-
-            function togglePassword() {
-                var passwordInput = document.getElementById('PasswordInput');
-                var button = document.querySelector('.toggle-password');
-
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    button.textContent = '🙈';
-                    button.setAttribute('aria-label', 'Hide password');
-                } else {
-                    passwordInput.type = 'password';
-                    button.textContent = '👁';
-                    button.setAttribute('aria-label', 'Show password');
-                }
-            }
-            </script>
-    </form>
+            <p id="paragraph" aria-live="polite"></p>
+            <h5 id="heading" aria-live="polite"></h5>
+        </form>
     </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('UsernameInput');
+        const passwordInput = document.getElementById('PasswordInput');
+        const statusParagraph = document.getElementById('paragraph');
+        const statusHeading = document.getElementById('heading');
+        const submitButton = loginForm.querySelector('button[type="submit"]');
+
+        async function verifyUser(event) {
+            event.preventDefault();
+            statusParagraph.textContent = '';
+            statusHeading.textContent = '';
+
+            if (!loginForm.checkValidity()) {
+                statusHeading.textContent = 'Enter a valid email address and password.';
+                loginForm.reportValidity();
+                return;
+            }
+
+            submitButton.disabled = true;
+            statusParagraph.textContent = 'Signing in...';
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: usernameInput.value.trim(),
+                        password: passwordInput.value,
+                        rememberMe: document.getElementById('rememberMe').checked,
+                    }),
+                });
+                const result = await response.json();
+
+                if (!response.ok) {
+                    statusParagraph.textContent = '';
+                    statusHeading.textContent = result.message || 'Invalid email or password.';
+                    return;
+                }
+
+                window.location.assign('/website/index.html');
+            } catch (error) {
+                statusParagraph.textContent = '';
+                statusHeading.textContent = 'Could not reach the server. Start the app server and try again.';
+            } finally {
+                submitButton.disabled = false;
+            }
+        }
+
+        loginForm.addEventListener('submit', verifyUser);
+    </script>
     
 
     
