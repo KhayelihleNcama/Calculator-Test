@@ -38,33 +38,14 @@ async function fetchWeatherByCoords(latitude, longitude) {
   weatherResult.innerHTML = '<p class="status">Loading weather...</p>';
 
   try {
-    const geoResponse = await fetch(
-      `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${latitude}&longitude=${longitude}&language=en&format=json`
-    );
-
-    const geoData = await geoResponse.json();
-    const place = geoData.results?.[0];
-
-    const weatherResponse = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&timezone=auto`
-    );
-
-    const weatherData = await weatherResponse.json();
-    const current = weatherData.current;
-    const weatherText = weatherCodes[current.weather_code] || "Weather condition";
-    const cityName = place ? `${place.name}${place.admin1 ? `, ${place.admin1}` : ""}, ${place.country}` : "Your location";
-
-    weatherResult.innerHTML = `
-      <div class="location">${cityName}</div>
-      <div class="temperature">${Math.round(current.temperature_2m)}°C</div>
-      <div class="condition">${weatherText}</div>
-      <div class="weather-meta">
-        <span>Wind: ${Math.round(current.wind_speed_10m)} km/h</span>
-        <span>Humidity: ${current.relative_humidity_2m}%</span>
-      </div>
-    `;
+    const [weatherData, locationName] = await Promise.all([
+      requestWeather(latitude, longitude),
+      getLocationName(latitude, longitude)
+    ]);
+    cityInput.value = locationName;
+    renderWeather(weatherData, locationName);
   } catch (error) {
-    showError(error.message || "Unable to load weather data.");
+    showError(getErrorMessage(error));
   }
 }
 
@@ -91,26 +72,76 @@ async function fetchWeather(city) {
 
     const { name, country, latitude, longitude, admin1 } = geoData.results[0];
 
-    const weatherResponse = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&timezone=auto`
+    const weatherData = await requestWeather(latitude, longitude);
+    renderWeather(weatherData, `${name}${admin1 ? `, ${admin1}` : ""}, ${country}`);
+  } catch (error) {
+    showError(getErrorMessage(error));
+  }
+}
+
+async function requestWeather(latitude, longitude) {
+  const response = await fetch(
+    `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&timezone=auto`
+  );
+
+  if (!response.ok) {
+    throw new Error("Weather service is unavailable. Please try again.");
+  }
+
+  const data = await response.json();
+  if (!data.current) {
+    throw new Error("Weather data is unavailable for this location.");
+  }
+
+  return data;
+}
+
+async function getLocationName(latitude, longitude) {
+  try {
+    const response = await fetch(
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
     );
 
-    const weatherData = await weatherResponse.json();
-    const current = weatherData.current;
-    const weatherText = weatherCodes[current.weather_code] || "Weather condition";
+    if (!response.ok) {
+      throw new Error("Location name lookup failed.");
+    }
 
-    weatherResult.innerHTML = `
-      <div class="location">${name}${admin1 ? `, ${admin1}` : ""}, ${country}</div>
-      <div class="temperature">${Math.round(current.temperature_2m)}°C</div>
-      <div class="condition">${weatherText}</div>
-      <div class="weather-meta">
-        <span>Wind: ${Math.round(current.wind_speed_10m)} km/h</span>
-        <span>Humidity: ${current.relative_humidity_2m}%</span>
-      </div>
-    `;
+    const place = await response.json();
+    const city = place.city || place.locality;
+    const region = place.principalSubdivision;
+
+    if (city && region && city !== region) {
+      return `${city}, ${region}`;
+    }
+
+    return city || region || place.countryName || "Your location";
   } catch (error) {
-    showError(error.message || "Unable to load weather data.");
+    console.warn("Could not look up the current city name.", error);
+    return "Your location";
   }
+}
+
+function renderWeather(weatherData, location) {
+  const current = weatherData.current;
+  const weatherText = weatherCodes[current.weather_code] || "Weather condition";
+
+  weatherResult.innerHTML = `
+    <div class="location">${location}</div>
+    <div class="temperature">${Math.round(current.temperature_2m)}°C</div>
+    <div class="condition">${weatherText}</div>
+    <div class="weather-meta">
+      <span>Wind: ${Math.round(current.wind_speed_10m)} km/h</span>
+      <span>Humidity: ${current.relative_humidity_2m}%</span>
+    </div>
+  `;
+}
+
+function getErrorMessage(error) {
+  if (error instanceof TypeError) {
+    return "Could not reach the weather service. Check your internet connection and try again.";
+  }
+
+  return error.message || "Unable to load weather data.";
 }
 
 function showError(message) {
