@@ -7,7 +7,18 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <main class="weather-card">
+      <div class="search-box">
+        <input id="cityInput" type="text" placeholder="Search for a city" value="Johannesburg" />
+        <button id="searchBtn" type="button">Search</button>
+        <button id="locationBtn" type="button" class="location-btn">Use my location</button>
+      </div>
+
+      <section id="weatherResult" class="weather-result">
+        <p class="status">Loading weather...</p>
+      </section>
+    </main>
+
     <script src="index.js"></script>
-    
   </body>
 </html>
