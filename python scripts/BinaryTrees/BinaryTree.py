@@ -102,13 +102,13 @@ class BinaryTree:
 
 
 # Create the binary tree
-root = BinaryTree(2)
-root._root._left = _BinTreeNode(4)
-root._root._right = _BinTreeNode(6)
+root = BinaryTree('R')
+root._root._left = _BinTreeNode('A')
+root._root._right = _BinTreeNode('D')
 
-root._root._left._left = _BinTreeNode(7)
-root._root._left._right = _BinTreeNode(10)
-root._root._right._right = _BinTreeNode(13)
+root._root._left._left = _BinTreeNode('C')
+root._root._left._right = _BinTreeNode('B')
+root._root._right._right = _BinTreeNode('E')
 
 
 
@@ -136,10 +136,12 @@ def calcTotal(myTree):
         return 0
 
     total = 0
+    if isinstance(myTree._element, (int, float)):
+        total += myTree._element
+
     if myTree._left is not None:
         total += calcTotal(myTree._left)
-    if isinstance(myTree._element,(int,float)):
-        total += myTree._element
+
     if myTree._right is not None:
         total += calcTotal(myTree._right)
 
