@@ -1,11 +1,15 @@
 
 
-let rootPath = "https://mysite.itvarsity.org/api/ContactBook/";
+const rootPath = "https://mysite.itvarsity.org/api/ContactBook/";
+const currentPage = window.location.pathname.split("/").pop();
 let apiKey = checkApiKey();
 
 function checkApiKey() {
-    if (!localStorage.getItem("apiKey")) {
-        window.open("enter-api-key.html", "_self");
+    const storedApiKey = localStorage.getItem("apiKey");
+
+    if (!storedApiKey && currentPage !== "enter-api-key.html") {
+        window.location.href = "enter-api-key.html";
     }
-    return localStorage.getItem("apiKey");
+
+    return storedApiKey;
 }

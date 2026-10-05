@@ -8,32 +8,42 @@
     <body>
         <div>Please enter a valid API key.</div>
         <form>
-            <input type="email" id="apiKey" name="apiKey"/>
-            <button id="submitApiKey">Submit</button>
+            <input type="email" id="apiKey" name="apiKey" />
+            <button id="submitApiKey" type="button">Submit</button>
         </form>
 
-        
         <script>
-            let rootPath = "https://mysite.itvarsity.org/api/ContactBook/";
+            const rootPath = "https://mysite.itvarsity.org/api/ContactBook/";
             document.getElementById("submitApiKey").addEventListener('click', setApiKey);
 
-            function setApiKey(e){
+            function setApiKey(e) {
                 e.preventDefault();
-                
-                apiKey = document.getElementById("apiKey").value;
-                fetch(rootPath + "controller/api-key/?apiKey=" + apiKey)
-                        .then(function (response) {
-                            return response.text();
-                        })
-                        .then(function (data) {
-                            
-                            if (data == "1") {
-                                localStorage.setItem("apiKey", apiKey);
-                                window.open("index.html", "_self");
-                            } else {
-                                alert(data + "Invalid API key entered!");
-                            }
-                        })
+
+                const apiKey = document.getElementById("apiKey").value.trim();
+                if (!apiKey) {
+                    alert("Please enter an API key.");
+                    return;
+                }
+
+                fetch(rootPath + "controller/api-key/?apiKey=" + encodeURIComponent(apiKey))
+                    .then(function (response) {
+                        if (!response.ok) {
+                            throw new Error("Invalid API key request");
+                        }
+                        return response.text();
+                    })
+                    .then(function (data) {
+                        if (data.trim() == "1") {
+                            localStorage.setItem("apiKey", apiKey);
+                            window.location.href = "index.html";
+                        } else {
+                            alert(data + " Invalid API key entered!");
+                        }
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        alert("Unable to validate the API key right now.");
+                    });
             }
         </script>
     </body>

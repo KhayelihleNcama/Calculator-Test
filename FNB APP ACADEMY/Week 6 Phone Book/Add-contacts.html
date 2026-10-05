@@ -8,7 +8,6 @@
         <br />
         
         <form id="editForm">
-        
             <label for="firstname">First name:</label>
             <input type="text" name="firstname" id="firstname" placeholder="Enter name"><br />
             <label for="lastname">Last name:</label>
@@ -18,51 +17,51 @@
             <label for="email" class="mail">E-mail:</label>
             <input type="text" name="email" id="email" placeholder="Enter E-mail"><br />
             <label for="avatar">Select a file</label>
-            <input type="file" name="avatar" id="firstname" placeholder="avatar"><br />
+            <input type="file" name="avatar" id="avatar" placeholder="avatar"><br />
             <button type="submit" id="submitForm">Submit</button>
-            
         </form>
-  
+
         <br />
         <button id="homeLink" type="button">Home</button>
         <script src="config.js"></script>
         <script>
+            document.getElementById("submitForm").addEventListener('click', submitForm);
+            document.getElementById("homeLink").addEventListener('click', HP);
 
-            document.getElementById("submitForm").addEventListener ('click',submitForm);
-            document.getElementById("homeLink").addEventListener ('click',HP);
-
-            function submitForm(e){
+            function submitForm(e) {
                 e.preventDefault();
                 const form = new FormData(document.querySelector('#editForm'));
-                form.append('apiKey',apiKey);
-                fetch(rootPath + 'controller/insert-contact/',{
+                form.append('apiKey', apiKey);
+
+                fetch(rootPath + 'controller/insert-contact/', {
                     method: 'POST',
-                    headers:{'Accept':'application/json *.*'},
+                    headers: { 'Accept': 'application/json *.*' },
                     body: form
                 })
-                .then(function(response){
-                
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Contact submission failed');
+                    }
                     return response.text();
                 })
-                .then(function(data){
-                    if (data == "1"){
+                .then(function (data) {
+                    if (data.trim() == "1") {
                         alert("Contact Added.");
-                        //link to user contacts to HP//
                         HP();
-
-                    }else{
+                    } else {
                         alert(data);
-                        //link to HP//
                         HP();
                     }
-                
                 })
+                .catch(function (error) {
+                    console.error(error);
+                    alert('Unable to add contact right now.');
+                });
             }
-                function HP(){
-                    window.open("index.html", "_self");
 
-                }
-            
+            function HP() {
+                window.location.href = "index.html";
+            }
         </script>
     </body>
 </html>

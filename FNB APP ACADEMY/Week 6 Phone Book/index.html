@@ -2,53 +2,63 @@
     <head>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="style.css">
-        <title></title>
+        <title>Phone Book</title>
     </head>
-    <body onload="fetchContacts()">
+    <body>
         <div id="table">Contacts Loading...</div>
-        <button  id="refresh">Refresh</button>
+        <button id="refresh" type="button">Refresh</button>
         <button id="addContact" type="button">Add Contact</button>
 
         <script src="config.js"></script>
         <script>
-
+            const apiKey = localStorage.getItem("apiKey");
 
             document.getElementById("refresh").addEventListener('click', fetchContacts);
             document.getElementById("addContact").addEventListener('click', addContacts);
+            fetchContacts();
 
+            function fetchContacts() {
+                if (!apiKey) {
+                    window.open("enter-api-key.html", "_self");
+                    return;
+                }
 
-           function fetchContacts()
-           {
-            fetch(rootPath + "controller/get-contacts/")
-            
-            .then(function(response){
-                return response.json();
-            })
-            .then(function(data){
-                displayOutput(data);
-                //console.log(data);
-            })
-           }
-           function displayOutput(data)
-           {
-            output = "<table>";
-            
-                for (a in data){
+                fetch(rootPath + "controller/get-contacts/?apiKey=" + encodeURIComponent(apiKey))
+                    .then(function (response) {
+                        if (!response.ok) {
+                            throw new Error("Failed to fetch contacts");
+                        }
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        displayOutput(data);
+                    })
+                    .catch(function (error) {
+                        document.getElementById("table").innerHTML = "Unable to load contacts.";
+                        console.error(error);
+                    });
+            }
+
+            function displayOutput(data) {
+                let output = "<table>";
+
+                for (let a in data) {
                     output += `
                         <tr>
-                           
-                            <td><img src="${rootPath}controller/uploads/${data[a].avatar}" width="50px"</td>
+                            <td><img src="${rootPath}controller/uploads/${data[a].avatar}" alt="Contact avatar" width="50" height="50" /></td>
                             <td><h5>${data[a].firstname}</h5></td>
                             <td><h5>${data[a].lastname}</h5></td>
                         </tr>
-                    `
+                    `;
                 }
+
                 output += "</table>";
                 document.getElementById("table").innerHTML = output;
+            }
 
-           }
-           function addContacts(){
-            window.open("Add-contacts.html","_self");
-           }
+            function addContacts() {
+                window.open("Add-contacts.html", "_self");
+            }
         </script>
     </body>
+</html>
