@@ -1,2 +1,1 @@
-
-SELECT * FROM DBO.Accounts;
+SELECT * FROM dbo.Accounts;

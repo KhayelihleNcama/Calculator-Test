@@ -109,12 +109,12 @@ async function getLocationName(latitude, longitude) {
     const place = await response.json();
     const city = place.city || place.locality;
     const region = place.principalSubdivision;
+    const country = place.countryName;
+    const locationParts = [city, region, country].filter((part, index, parts) =>
+      part && parts.indexOf(part) === index
+    );
 
-    if (city && region && city !== region) {
-      return `${city}, ${region}`;
-    }
-
-    return city || region || place.countryName || "Your location";
+    return locationParts.join(", ") || "Your location";
   } catch (error) {
     console.warn("Could not look up the current city name.", error);
     return "Your location";
